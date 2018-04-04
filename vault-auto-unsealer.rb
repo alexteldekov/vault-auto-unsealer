@@ -25,17 +25,21 @@ if !Vault.sys.init_status.initialized?
   pgp_key_path = ENV["PGP_KEY_PATH"]
 
   if pgp_key_path.nil?
-    abort "Environment variable PGP_KEY_PATH must be set to the path of a file containing a Base64-encoded (but not ASCII armored) OpenPGP public key that Vault's keys should be encrypted with."
+    response = Vault.sys.init(
+      secret_shares: 1,
+      secret_threshold: 1,
+    )
+  else
+
+    pgp_key = File.read(pgp_key_path).chomp
+
+    response = Vault.sys.init(
+      pgp_keys: [pgp_key],
+      root_token_pgp_key: pgp_key,
+      secret_shares: 1,
+      secret_threshold: 1,
+    )
   end
-
-  pgp_key = File.read(pgp_key_path).chomp
-
-  response = Vault.sys.init(
-    pgp_keys: [pgp_key],
-    root_token_pgp_key: pgp_key,
-    secret_shares: 1,
-    secret_threshold: 1,
-  )
 
   puts <<EOS
 Vault initialized successfully.
@@ -56,7 +60,9 @@ if unseal_key.nil? || unseal_key == ""
   abort "Environment variable UNSEAL_KEY must be set to the decrypted Vault unseal key."
 end
 
-if unseal_key.bytesize != 64
+pgp_key_path = ENV["PGP_KEY_PATH"]
+
+if (pgp_key_path != nil && unseal_key.bytesize != 64)
   puts <<EOS
 Placeholder UNSEAL_KEY detected.
 vault-auto-unsealer will now sleep until terminated with SIGTERM, so that Kubernetes will not try to restart it before an operator can redeploy it with UNSEAL_KEY set.
