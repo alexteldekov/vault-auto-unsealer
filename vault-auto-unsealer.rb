@@ -30,7 +30,6 @@ if !Vault.sys.init_status.initialized?
       secret_threshold: 1,
     )
   else
-
     pgp_key = File.read(pgp_key_path).chomp
 
     response = Vault.sys.init(
