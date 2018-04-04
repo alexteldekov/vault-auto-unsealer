@@ -29,6 +29,9 @@ if !Vault.sys.init_status.initialized?
       secret_shares: 1,
       secret_threshold: 1,
     )
+    puts <<EOS
+Vault initialized successfully.
+EOS
   else
     pgp_key = File.read(pgp_key_path).chomp
 
@@ -38,11 +41,13 @@ if !Vault.sys.init_status.initialized?
       secret_shares: 1,
       secret_threshold: 1,
     )
+    puts <<EOS
+Vault initialized successfully.
+The following values are Base64 encoded and encrypted with OpenPGP.
+EOS
   end
 
   puts <<EOS
-Vault initialized successfully.
-The following values are Base64 encoded and encrypted with OpenPGP.
 
 Unseal key: #{response.keys_base64.first}
 Root token: #{response.root_token}
