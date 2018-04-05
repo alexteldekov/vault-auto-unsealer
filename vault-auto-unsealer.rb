@@ -26,18 +26,19 @@ if !Vault.sys.init_status.initialized?
 
   if pgp_key_path.nil?
     puts "Environment variable PGP_KEY_PATH must be set to the path of a file containing a Base64-encoded (but not ASCII armored) OpenPGP public key that Vault's keys should be encrypted with."
-  end
-
-  if !pgp_key_path.nil?
+    response = Vault.sys.init(
+      secret_shares: 1,
+      secret_threshold: 1,
+    )
+  else
     pgp_key = File.read(pgp_key_path).chomp
+    response = Vault.sys.init(
+      pgp_keys: [pgp_key],
+      root_token_pgp_key: pgp_key,
+      secret_shares: 1,
+      secret_threshold: 1,
+    )
   end
-
-  response = Vault.sys.init(
-    pgp_keys: [pgp_key],
-    root_token_pgp_key: pgp_key,
-    secret_shares: 1,
-    secret_threshold: 1,
-  )
 
   puts <<EOS
 Vault initialized successfully.
