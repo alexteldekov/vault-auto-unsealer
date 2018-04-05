@@ -51,6 +51,8 @@ Root token: #{response.root_token}
 
 Redeploy vault-auto-unsealer with the environment variable UNSEAL_KEY set to the decrypted unseal key.
 EOS
+
+  sleep
 else
   puts "Vault was already initialized."
 end
@@ -61,7 +63,7 @@ if unseal_key.nil? || unseal_key == ""
   abort "Environment variable UNSEAL_KEY must be set to the decrypted Vault unseal key."
 end
 
-if unseal_key.bytesize != 64
+if unseal_key.bytesize < 32
   puts <<EOS
 Placeholder UNSEAL_KEY detected.
 vault-auto-unsealer will now sleep until terminated with SIGTERM, so that Kubernetes will not try to restart it before an operator can redeploy it with UNSEAL_KEY set.
