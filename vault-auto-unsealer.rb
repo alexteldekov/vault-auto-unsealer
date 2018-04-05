@@ -25,7 +25,7 @@ if !Vault.sys.init_status.initialized?
   pgp_key_path = ENV["PGP_KEY_PATH"]
 
   if pgp_key_path.nil?
-    abort "Environment variable PGP_KEY_PATH must be set to the path of a file containing a Base64-encoded (but not ASCII armored) OpenPGP public key that Vault's keys should be encrypted with."
+    puts "Environment variable PGP_KEY_PATH must be set to the path of a file containing a Base64-encoded (but not ASCII armored) OpenPGP public key that Vault's keys should be encrypted with."
   end
 
   pgp_key = File.read(pgp_key_path).chomp
